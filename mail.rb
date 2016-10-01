@@ -1,11 +1,14 @@
 require 'mailgun'
-require "midi-smtp-server"
+require 'midi-smtp-server'
+
+# sync stdout so logging shows up
+$stdout.sync = true
 
 # Server class
 class MailgunSmtpd < MidiSmtpServer::Smtpd
   def start
-    unless ENV.has_key?('MG_DOMAIN') && ENV.has_key?('MG_KEY')
-      puts "#{Time.now}: You must set the environment variables MG_DOMAIN and MG_KEY. Exiting..."
+    unless ENV.key?('MG_DOMAIN') && ENV.key?('MG_KEY')
+      printf "#{Time.now}: You must set the environment variables MG_DOMAIN and MG_KEY. Exiting...\n"
       exit(false)
     end
 
@@ -13,7 +16,6 @@ class MailgunSmtpd < MidiSmtpServer::Smtpd
     @@mg_domain = ENV['MG_DOMAIN']
     super
   end
-
 
   def on_message_data_event(ctx)
     logger.debug("[#{ctx[:envelope][:from]}] for recipient(s): [#{ctx[:envelope][:to]}]...")
@@ -32,7 +34,7 @@ listen_addr = ENV['MG_SMTPD_ADDRESS'] || '0.0.0.0'
 listen_simul = ENV['MG_SMTPD_SIMULATENOUS_CONNECTIONS'] || 4
 listen_options = ENV['MG_SMTPD_OPTIONS'] || {}
 
-puts "#{Time.now}: Starting MailgunSmtpd on #{listen_addr}:#{listen_port}..."
+printf "#{Time.now}: Starting MailgunSmtpd on #{listen_addr}:#{listen_port}...\n"
 server = MailgunSmtpd.new(listen_port, listen_addr, listen_simul, listen_options)
 
 server.start
