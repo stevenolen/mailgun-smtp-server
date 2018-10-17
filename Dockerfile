@@ -1,9 +1,9 @@
-FROM alpine:3.3
+FROM alpine:3.8
 MAINTAINER technolengy@gmail.com
 
 RUN apk update && apk --update add ruby ruby-irb ruby-io-console tzdata ca-certificates
 
-ADD Gemfile /app/  
+ADD Gemfile /app/
 ADD Gemfile.lock /app/
 
 RUN apk --update add --virtual build-deps build-base ruby-dev \
@@ -12,8 +12,8 @@ RUN apk --update add --virtual build-deps build-base ruby-dev \
     && bundle install \
     && apk del build-deps
 
-ADD . /app  
-RUN chown -R root:root /app  
+ADD . /app
+RUN chown -R root:root /app
 
 WORKDIR /app
 
